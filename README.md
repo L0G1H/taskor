@@ -1,4 +1,4 @@
-# taskor
+# Taskor
 
 Taskor is a powerful, flexible command-line interface (CLI) tool designed for task automation, prompt management, and intelligent text processing. It leverages various AI models and offers robust file handling capabilities.
 
