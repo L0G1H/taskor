@@ -1,4 +1,4 @@
-# Taskor: Intelligent Task Automation CLI
+# Taskor
 
 ## Overview
 
