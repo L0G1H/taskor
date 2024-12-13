@@ -16,7 +16,7 @@ Taskor is a powerful, flexible command-line interface (CLI) tool designed for ta
 ## Installation
 ```bash
 git clone https://github.com/L0G1H/taskor.git
-pip install -r requirements.txt
+pip install -r taskor/requirements.txt
 ```
 
 ## Help
