@@ -1,4 +1,4 @@
-# Taskor: Intelligent Task Automation CLI
+# Taskor
 
 ## Overview
 
@@ -13,19 +13,36 @@ Taskor is a powerful, flexible command-line interface (CLI) tool designed for ta
 - 🔍 Response Search Functionality
 - 🔑 Customizable System Prompts and Models
 
-## Prerequisites
-
-- Python 3.12+
-- Poetry (dependency management)
-
 ## Installation
-
-### Clone the Repository
 ```bash
 git clone https://github.com/L0G1H/taskor.git
-pip install poetry
-cd taskor
-poetry install
+pip install -r requirements.txt
+```
+
+## Help
+```bash
+usage: taskor [-h] [-m MODEL] [-f] [-i] [-p] [-n] [-s] [-c] [--change-system-prompt] [--change-default-model] [--delete-history] [prompt ...]
+
+Taskor CLI Tool
+
+positional arguments:
+  prompt                input
+
+options:
+  -h, --help            show this help message and exit
+  -m MODEL, --model MODEL
+                        model to use (default - claude-3-5-haiku-latest)
+  -f, --add-files       add external files
+  -i, --incognito       not to save response
+  -p, --paste           include current paste in the prompt
+  -n, --no-prompt       pass request without a system prompt
+  -s, --search          search for a specific term in saved responses
+  -c, --copy            copy a specific response (default - last)
+  --change-system-prompt
+                        change system prompt
+  --change-default-model
+                        change default model
+  --delete-history      delete request history
 ```
 
 ## Usage
@@ -34,41 +51,29 @@ poetry install
 ```bash
 taskor Write a Python function to reverse a string
 ```
-
-### Advanced Options
-- `-m, --model`: Specify AI model
-- `-f, --add-files`: Include external files
-- `-i, --incognito`: Prevent saving response
-- `-p, --paste`: Use clipboard content
-- `-s, --search`: Search response history
-- `-c, --copy`: Copy specific response
-
-### Examples
-#### Generate code with GPT-4
+### Generate code with GPT-4
 ```bash
 taskor -m gpt-4 Create a Flask API endpoint
 ```
 
-#### Include file contents in context
+### Include file contents in context
 ```bash
 taskor -f Summarize this document
 ```
 
-#### Search response history
+### Search response history
 ```bash
-taskor -s "python"
+taskor -s python
 ```
 
-## Configuration
-
-### System Prompt
+### Change system Prompt
 ```bash
 taskor --change-system-prompt You are a helpful coding assistant
 ```
 
-### Default Model
+### Change default Model
 ```bash
-taskor --change-default-model "claude-3-5-sonnet-latest"
+taskor --change-default-model claude-3-5-sonnet-latest
 ```
 
 ## License
