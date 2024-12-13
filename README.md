@@ -23,6 +23,7 @@ Taskor is a powerful, flexible command-line interface (CLI) tool designed for ta
 ### Clone the Repository
 ```bash
 git clone https://github.com/L0G1H/taskor.git
+pip install poetry
 cd taskor
 poetry install
 ```
@@ -43,14 +44,18 @@ poetry run taskor "Write a Python function to reverse a string"
 - `-c, --copy`: Copy specific response
 
 ### Examples
+#### Generate code with GPT-4
 ```bash
-# Generate code with GPT-4
 poetry run taskor -m gpt-4 "Create a Flask API endpoint"
+```
 
-# Include file contents in context
+#### Include file contents in context
+```bash
 poetry run taskor -f "Summarize this document"
+```
 
-# Search response history
+#### Search response history
+```bash
 poetry run taskor -s "python"
 ```
 
@@ -63,7 +68,7 @@ poetry run taskor --change-system-prompt "You are a helpful coding assistant"
 
 ### Default Model
 ```bash
-poetry run taskor --change-default-model "anthropic/claude-2"
+poetry run taskor --change-default-model "claude-3-5-sonnet-latest"
 ```
 
 ## License
