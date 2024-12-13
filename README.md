@@ -32,7 +32,7 @@ poetry install
 
 ### Basic Prompt
 ```bash
-poetry run taskor "Write a Python function to reverse a string"
+taskor Write a Python function to reverse a string
 ```
 
 ### Advanced Options
@@ -46,29 +46,29 @@ poetry run taskor "Write a Python function to reverse a string"
 ### Examples
 #### Generate code with GPT-4
 ```bash
-poetry run taskor -m gpt-4 "Create a Flask API endpoint"
+taskor -m gpt-4 Create a Flask API endpoint
 ```
 
 #### Include file contents in context
 ```bash
-poetry run taskor -f "Summarize this document"
+taskor -f Summarize this document
 ```
 
 #### Search response history
 ```bash
-poetry run taskor -s "python"
+taskor -s "python"
 ```
 
 ## Configuration
 
 ### System Prompt
 ```bash
-poetry run taskor --change-system-prompt "You are a helpful coding assistant"
+taskor --change-system-prompt You are a helpful coding assistant
 ```
 
 ### Default Model
 ```bash
-poetry run taskor --change-default-model "claude-3-5-sonnet-latest"
+taskor --change-default-model "claude-3-5-sonnet-latest"
 ```
 
 ## License
