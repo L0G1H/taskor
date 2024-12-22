@@ -27,3 +27,13 @@ dependencies = [
     "striprtf>=0.0.28",
     "xlrd>=2.0.1",
 ]
+
+[project.scripts]
+taskor = "taskor.taskor:main"
+
+[tool.setuptools]
+py-modules = []
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
