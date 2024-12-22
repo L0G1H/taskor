@@ -7,7 +7,8 @@ from rich.markdown import Markdown
 import sys
 from pathlib import Path
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, project_root)
 
 from taskor.utils.file_extractor import extract_text_from_file
 from taskor.utils import get_file_paths
