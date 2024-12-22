@@ -32,7 +32,7 @@ dependencies = [
 taskor = "taskor.taskor:main"
 
 [tool.setuptools]
-py-modules = []
+py-modules = ["taskor"]
 
 [build-system]
 requires = ["setuptools>=61.0"]
