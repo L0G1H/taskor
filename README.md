@@ -13,15 +13,7 @@ Taskor is a powerful, flexible command-line interface (CLI) tool designed for ta
 
 ## Installation
 ```bash
-git clone https://github.com/L0G1H/taskor.git
-cd taskor
-poetry install
-```
-
-If you're using uv
-
-```bash
-uv tool install https://github.com/L0G1H/taskor.git
+pip install git+https://github.com/L0G1H/taskor.git
 ```
 
 ## Help
