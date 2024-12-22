@@ -15,7 +15,7 @@ from taskor.utils import get_file_paths
 from taskor.utils.assistant_api import get_completion
 
 
-RESOURCES_PATH = Path(__file__).parent.parent / "resources"
+RESOURCES_PATH = Path(__file__).parent / "resources"
 RESPONSES_PATH = RESOURCES_PATH / "responses.json"
 SYSTEM_PROMPT_PATH = RESOURCES_PATH / "system_prompt.txt"
 DEFAULT_MODEL_PATH = RESOURCES_PATH / "default_model.txt"
