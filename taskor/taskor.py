@@ -1,3 +1,7 @@
+from taskor.utils.file_extractor import extract_text_from_file
+from taskor.utils import get_file_paths
+from taskor.utils.assistant_api import get_completion
+
 import argparse
 import json
 import os
@@ -7,13 +11,9 @@ from rich.markdown import Markdown
 import sys
 from pathlib import Path
 
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
-
-from taskor.utils.file_extractor import extract_text_from_file
-from taskor.utils import get_file_paths
-from taskor.utils.assistant_api import get_completion
-
 
 RESOURCES_PATH = Path(__file__).parent / "resources"
 RESPONSES_PATH = RESOURCES_PATH / "responses.json"
@@ -34,7 +34,9 @@ def save_response(prompt: str, response: str) -> None:
         with open(RESPONSES_PATH, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=4)
     except FileNotFoundError:
-        console.print(f"Error: Cannot find responses file at {RESPONSES_PATH}", style="bold red")
+        console.print(
+            f"Error: Cannot find responses file at {RESPONSES_PATH}", style="bold red"
+        )
     except json.JSONDecodeError:
         console.print("Error: Malformed JSON in responses file", style="bold red")
     except Exception as e:
@@ -64,7 +66,9 @@ def get_response_str(prompt: str) -> str:
             return ""
 
     except FileNotFoundError:
-        console.print(f"Error: Cannot find responses file at {RESPONSES_PATH}", style="bold red")
+        console.print(
+            f"Error: Cannot find responses file at {RESPONSES_PATH}", style="bold red"
+        )
         return ""
     except json.JSONDecodeError:
         console.print("Error: Malformed JSON in responses file", style="bold red")
@@ -258,7 +262,8 @@ def main():
             prompt=prompt,
             resources=resources,
             is_system_prompt=is_system_prompt,
-            SYSTEM_PROMPT_PATH=SYSTEM_PROMPT_PATH)
+            SYSTEM_PROMPT_PATH=SYSTEM_PROMPT_PATH,
+        )
 
         print_response(response)
 

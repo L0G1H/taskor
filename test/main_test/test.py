@@ -12,7 +12,6 @@ from taskor.taskor import (
     SYSTEM_PROMPT_PATH,
 )
 
-# Test data
 TEST_RESPONSES = [
     {"nr": 1, "prompt": "test prompt 1", "response": "test response 1"},
     {"nr": 2, "prompt": "test prompt 2", "response": "test response 2"},

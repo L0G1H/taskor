@@ -1,1 +1,1 @@
-from .taskor import main
+from .taskor import main as main

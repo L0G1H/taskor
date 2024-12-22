@@ -16,6 +16,8 @@ Taskor is a powerful, flexible command-line interface (CLI) tool designed for ta
 pip install git+https://github.com/L0G1H/taskor.git
 ```
 
+Set `ANTHROPIC_API_KEY` or/and `OPENAI_API_KEY` to the appropriate values.
+
 ## Help
 ```bash
 usage: taskor [-h] [-m MODEL] [-f] [-i] [-p] [-n] [-s] [-c] [--change-system-prompt] [--change-default-model] [--delete-history] [prompt ...]

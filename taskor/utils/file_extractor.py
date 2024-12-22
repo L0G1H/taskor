@@ -60,13 +60,13 @@ def extract_text_from_file(file_path):
             text = extract_text_from_xml(file_path)
         elif file_ext == ".ini":
             text = extract_text_from_ini(file_path)
-    except:
+    except Exception:
         pass
 
     if text == "":
         try:
             text = extract_text_from_binary(file_path)
-        except:
+        except Exception:
             pass
 
     return file_path + "\n" + text
