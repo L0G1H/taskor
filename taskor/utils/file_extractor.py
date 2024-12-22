@@ -262,4 +262,4 @@ def extract_text_from_binary(file_path: str) -> str:
     return decoded_text
 
 if __name__ == "__main__":
-    print(extract_text_from_file("../taskor/taskor.py"))
+    print(extract_text_from_file("../taskor.py"))

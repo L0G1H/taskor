@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from utils.file_selector import get_file_paths
+from taskor.utils import get_file_paths
 
 
 class TestFileSelector(unittest.TestCase):

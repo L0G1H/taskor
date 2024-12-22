@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch, mock_open, MagicMock
-from utils.file_extractor import *
+from taskor.utils.file_extractor import *
 
 
 class TestFileExtractor(unittest.TestCase):

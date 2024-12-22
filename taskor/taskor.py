@@ -9,9 +9,9 @@ from pathlib import Path
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from utils.file_extractor import extract_text_from_file
-from utils.file_selector import get_file_paths
-from utils.assistant_api import get_completion
+from taskor.utils.file_extractor import extract_text_from_file
+from taskor.utils import get_file_paths
+from taskor.utils.assistant_api import get_completion
 
 
 RESOURCES_PATH = Path(__file__).parent.parent / "resources"
@@ -257,7 +257,7 @@ def main():
             prompt=prompt,
             resources=resources,
             is_system_prompt=is_system_prompt,
-        )
+            SYSTEM_PROMPT_PATH=SYSTEM_PROMPT_PATH)
 
         print_response(response)
 

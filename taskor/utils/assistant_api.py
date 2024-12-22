@@ -2,9 +2,11 @@ import os
 from anthropic import Anthropic
 from openai import OpenAI
 import dotenv
+from pathlib import Path
 
 
-def get_completion(model: str, prompt: str, resources: str = "", is_system_prompt: bool = True) -> str:
+def get_completion(model: str, prompt: str, SYSTEM_PROMPT_PATH: Path, resources: str = "",
+                   is_system_prompt: bool = True) -> str:
     dotenv.load_dotenv()
 
     request_text = f"TASK: {prompt} \n\n"
@@ -13,8 +15,6 @@ def get_completion(model: str, prompt: str, resources: str = "", is_system_promp
         request_text += "RESOURCE FILES\n" + resources + "\n\n"
 
     if is_system_prompt:
-        SYSTEM_PROMPT_PATH = os.path.join(os.path.dirname(__file__), "../resources/system_prompt.txt")
-
         with open(SYSTEM_PROMPT_PATH, encoding="utf-8") as f:
             system_prompt = f.read().upper()
 
@@ -47,7 +47,3 @@ def get_completion(model: str, prompt: str, resources: str = "", is_system_promp
         response = completion.choices[0].message.content
     
     return response
-
-
-if __name__ == "__main__":
-    print(get_completion(model="claude-3-5-haiku-latest", prompt="Write me a sample Python code with classes"))

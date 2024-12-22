@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch, mock_open, MagicMock
-from utils.assistant_api import get_completion
+from taskor.utils.assistant_api import get_completion
 
 
 class TestAssistantAPI(unittest.TestCase):
