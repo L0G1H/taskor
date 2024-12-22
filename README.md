@@ -18,6 +18,12 @@ cd taskor
 poetry install
 ```
 
+If you're using uv
+
+```bash
+uv tool install https://github.com/L0G1H/taskor.git
+```
+
 ## Help
 ```bash
 usage: taskor [-h] [-m MODEL] [-f] [-i] [-p] [-n] [-s] [-c] [--change-system-prompt] [--change-default-model] [--delete-history] [prompt ...]
