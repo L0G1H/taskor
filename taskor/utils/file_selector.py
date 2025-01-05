@@ -1,7 +1,7 @@
-import os
-from PyQt5.QtWidgets import QApplication, QFileDialog
-from PyQt5.QtGui import QPalette, QColor
 import sys
+from pathlib import Path
+from PyQt5.QtGui import QColor, QPalette
+from PyQt5.QtWidgets import QApplication, QFileDialog
 
 
 def get_file_paths() -> list[str]:
@@ -28,9 +28,9 @@ def get_file_paths() -> list[str]:
     files, _ = QFileDialog.getOpenFileNames(
         None,
         "Select files to extract text",
-        os.path.expanduser("~"),
+        str(Path.home()),
         "All Files (*)",
-        options=options
+        options=options,
     )
 
     app.exit()

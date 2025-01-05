@@ -1,10 +1,8 @@
-from taskor.utils.file_extractor import extract_text_from_file
-from taskor.utils import get_file_paths
-from taskor.utils.assistant_api import get_completion
-
+from utils.text_extractor import extract_text_from_file
+from utils import get_file_paths
+from utils.assistant_api import get_completion
 import argparse
 import json
-import os
 import pyperclip
 from rich.console import Console
 from rich.markdown import Markdown
@@ -12,8 +10,8 @@ import sys
 from pathlib import Path
 
 
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.insert(0, project_root)
+project_root = Path(__file__).resolve().parent.parent
+sys.path.append(str(project_root))
 
 RESOURCES_PATH = Path(__file__).parent / "resources"
 RESPONSES_PATH = RESOURCES_PATH / "responses.json"
@@ -22,16 +20,16 @@ DEFAULT_MODEL_PATH = RESOURCES_PATH / "default_model.txt"
 
 console = Console()
 
-with open(DEFAULT_MODEL_PATH, encoding="utf-8") as f:
+with Path.open(DEFAULT_MODEL_PATH, encoding="utf-8") as f:
     DEFAULT_MODEL = f.read()
 
 
 def save_response(prompt: str, response: str) -> None:
     try:
-        with open(RESPONSES_PATH, encoding="utf-8") as f:
+        with Path.open(RESPONSES_PATH, encoding="utf-8") as f:
             data = json.load(f)
         data.append({"nr": len(data) + 1, "prompt": prompt, "response": response})
-        with open(RESPONSES_PATH, "w", encoding="utf-8") as f:
+        with Path.open(RESPONSES_PATH, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=4)
     except FileNotFoundError:
         console.print(
@@ -40,12 +38,12 @@ def save_response(prompt: str, response: str) -> None:
     except json.JSONDecodeError:
         console.print("Error: Malformed JSON in responses file", style="bold red")
     except Exception as e:
-        console.print(f"Error saving response: {str(e)}", style="bold red")
+        console.print(f"Error saving response: {e}", style="bold red")
 
 
 def get_response_str(prompt: str) -> str:
     try:
-        with open(RESPONSES_PATH, encoding="utf-8") as f:
+        with Path.open(RESPONSES_PATH, encoding="utf-8") as f:
             data = json.load(f)
 
         if len(data) == 0:
@@ -74,7 +72,7 @@ def get_response_str(prompt: str) -> str:
         console.print("Error: Malformed JSON in responses file", style="bold red")
         return ""
     except Exception as e:
-        console.print(f"Error reading response: {str(e)}", style="bold red")
+        console.print(f"Error reading response: {e}", style="bold red")
         return ""
 
 
@@ -83,7 +81,7 @@ def print_response(response_str: str) -> None:
 
 
 def search_responses(term: str) -> None:
-    with open(RESPONSES_PATH, encoding="utf-8") as f:
+    with Path.open(RESPONSES_PATH, encoding="utf-8") as f:
         data = json.load(f)
 
     term = term.lower()
@@ -104,15 +102,15 @@ def search_responses(term: str) -> None:
     return
 
 
-def get_clipboard_content():
+def get_clipboard_content() -> str:
     try:
         return pyperclip.paste()
     except Exception as e:
-        console.print(f"Error accessing clipboard: {str(e)}", style="bold red")
+        console.print(f"Error accessing clipboard: {e}", style="bold red")
     return ""
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Taskor CLI Tool")
 
     parser.add_argument(
@@ -193,38 +191,42 @@ def main():
     prompt = " ".join(args.prompt)
 
     if args.delete_history:
-        with open(RESPONSES_PATH, "w", encoding="utf-8") as f:
+        with Path.open(RESPONSES_PATH, "w", encoding="utf-8") as f:
             f.write("[]")
 
         console.print("Successfully deleted history", style="bold green")
-        return
+
+        sys.exit()
 
     if args.change_system_prompt:
         if prompt or prompt == "":
-            with open(SYSTEM_PROMPT_PATH, "w", encoding="utf-8") as f:
+            with Path.open(SYSTEM_PROMPT_PATH, "w", encoding="utf-8") as f:
                 f.write(prompt)
 
             console.print("Successfully changed system prompt", style="bold green")
         else:
             console.print("System prompt not given", style="bold red")
-        return
+
+        sys.exit()
 
     if args.change_default_model:
         if prompt:
-            with open(DEFAULT_MODEL_PATH, "w", encoding="utf-8") as f:
+            with Path.open(DEFAULT_MODEL_PATH, "w", encoding="utf-8") as f:
                 f.write(prompt)
 
             console.print("Successfully changed default model", style="bold green")
         else:
             console.print("Default model not given", style="bold red")
-        return
+
+        sys.exit()
 
     if args.search:
         if prompt:
             search_responses(prompt)
         else:
             console.print("Search prompt not given", style="bold red")
-        return
+
+        sys.exit()
 
     if args.copy:
         try:
@@ -233,8 +235,9 @@ def main():
                 pyperclip.copy(response)
                 console.print("Response copied to clipboard", style="bold green")
         except Exception as e:
-            console.print(f"Error copying to clipboard: {str(e)}", style="bold red")
-        return
+            console.print(f"Error copying to clipboard: {e}", style="bold red")
+
+        sys.exit()
 
     if prompt:
         resources = ""
@@ -245,10 +248,16 @@ def main():
 
             if not file_paths:
                 console.print("No files selected", style="bold red")
-                return
+                sys.exit()
 
             for file_path in file_paths:
-                resources += extract_text_from_file(file_path) + "\n\n"
+                resource = extract_text_from_file(file_path)
+
+                if isinstance(resource, tuple):
+                    console.print(resource[1], style="bold red")
+                    sys.exit()
+
+                resources += resource + "\n\n"
 
         if args.paste:
             clipboard_content = get_clipboard_content()
@@ -265,14 +274,17 @@ def main():
             SYSTEM_PROMPT_PATH=SYSTEM_PROMPT_PATH,
         )
 
+        if isinstance(response, tuple):
+            console.print(response[1], style="bold red")
+            sys.exit()
+
         print_response(response)
 
         if not args.incognito:
             save_response(prompt, response)
-        return
+        sys.exit()
 
     console.print("Invalid syntax", style="bold red")
-    return
 
 
 if __name__ == "__main__":

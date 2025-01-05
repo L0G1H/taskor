@@ -1,5 +1,5 @@
+from __future__ import annotations
 import json
-import os
 import re
 import warnings
 import xml.etree.ElementTree as ET
@@ -9,9 +9,7 @@ import ebooklib
 import PyPDF2
 import markdown2
 import openpyxl
-import pandas as pd
 import pytesseract
-import xlrd
 import yaml
 from bs4 import BeautifulSoup
 from docx import Document
@@ -19,15 +17,15 @@ from ebooklib import epub
 from PIL import Image
 from pptx import Presentation
 import striprtf
+from pathlib import Path
 
 
 warnings.filterwarnings("ignore", category=UserWarning, module="ebooklib")
 warnings.filterwarnings("ignore", category=FutureWarning, module="ebooklib")
 
 
-def extract_text_from_file(file_path):
-    file_ext = os.path.splitext(file_path)[1].lower()
-    text = ""
+def extract_text_from_file(file_path: str) -> str | tuple[None, str]:
+    file_ext = Path(file_path).suffix.lower()
 
     try:
         if file_ext == ".txt":
@@ -60,77 +58,61 @@ def extract_text_from_file(file_path):
             text = extract_text_from_xml(file_path)
         elif file_ext == ".ini":
             text = extract_text_from_ini(file_path)
-    except Exception:
-        pass
-
-    if text == "":
-        try:
+        else:
             text = extract_text_from_binary(file_path)
-        except Exception:
-            pass
+    except Exception as e:
+        return None, str(e)
 
     return file_path + "\n" + text
 
 
 def extract_text_from_txt(file_path: str) -> str:
-
-    with open(file_path, encoding="utf-8", errors="ignore") as f:
+    with Path.open(file_path, encoding="utf-8", errors="ignore") as f:
         return f.read()
 
 
 def extract_text_from_pdf(file_path: str) -> str:
-    text = ""
-    with open(file_path, "rb") as file:
+    text = []
+    with Path.open(file_path, "rb") as file:
         reader = PyPDF2.PdfReader(file)
         for page_num, page in enumerate(reader.pages, start=1):
-            page_text = page.extract_text()
-            if page_text:
-                text += f"\n--- Page {page_num} ---\n{page_text}"
+            try:
+                page_text = page.extract_text()
+                if page_text and not page_text.isspace():
+                    text.append(f"\n--- Page {page_num} ---\n{page_text.strip()}")
+            except Exception as e:
+                text.append(f"\n--- Page {page_num} ---\nError: {e}")
 
-    return text
+    return "\n".join(text)
 
 
 def extract_text_from_doc(file_path: str) -> str:
     doc = Document(file_path)
-    text = "\n".join([para.text for para in doc.paragraphs])
 
-    return text
+    return "\n".join([para.text for para in doc.paragraphs])
 
 
 def extract_text_from_spreadsheet(file_path: str) -> str:
-    text = ""
+    def _format_cell(cell: None | float | str) -> str:
+        if cell is None:
+            return ""
+        if isinstance(cell, (int, float)):
+            return str(cell)
+        return str(cell).strip()
+
+    text = []
 
     if file_path.endswith((".xlsx", ".xlsm")):
         wb = openpyxl.load_workbook(file_path, read_only=True, data_only=True)
         for sheetname in wb.sheetnames:
             ws = wb[sheetname]
-            text += f"\n--- Sheet: {sheetname} ---\n"
+            text.append(f"\n--- Sheet: {sheetname} ---")
             for row in ws.iter_rows(values_only=True):
-                row_text = " | ".join(
-                    [str(cell) if cell is not None else "" for cell in row]
-                )
-                text += row_text + "\n"
-    elif file_path.endswith(".xls"):
-        wb = xlrd.open_workbook(file_path)
-        for sheet in wb.sheets():
-            text += f"\n--- Sheet: {sheet.name} ---\n"
-            for row_idx in range(sheet.nrows):
-                row = sheet.row(row_idx)
-                row_text = " | ".join(
-                    [
-                        str(cell.value) if cell.value is not None else ""
-                        for cell in row
-                    ]
-                )
-                text += row_text + "\n"
-    elif file_path.endswith(".csv"):
-        df = pd.read_csv(file_path)
-        text += df.to_string(index=False)
-    elif file_path.endswith(".ods"):
-        df = pd.read_excel(file_path, engine="odf")
-        text += df.to_string(index=False)
+                if any(cell is not None for cell in row):
+                    row_text = " | ".join(_format_cell(cell) for cell in row)
+                    text.append(row_text)
 
-    return text
+    return "\n".join(text)
 
 
 def extract_text_from_ppt(file_path: str) -> str:
@@ -147,19 +129,17 @@ def extract_text_from_ppt(file_path: str) -> str:
 
 
 def extract_text_from_html(file_path: str) -> str:
-    with open(file_path, encoding="utf-8", errors="ignore") as f:
+    with Path.open(file_path, encoding="utf-8", errors="ignore") as f:
         html_content = f.read()
     soup = BeautifulSoup(html_content, "html.parser")
-    text = soup.get_text(separator="\n")
 
-    return text
+    return soup.get_text(separator="\n")
 
 
 def extract_text_from_image(file_path: str) -> str:
     img = Image.open(file_path)
-    text = pytesseract.image_to_string(img)
 
-    return text
+    return pytesseract.image_to_string(img)
 
 
 def extract_text_from_epub(file_path: str) -> str:
@@ -171,61 +151,59 @@ def extract_text_from_epub(file_path: str) -> str:
             content = item.get_content()
             soup = BeautifulSoup(content, "html.parser")
             text += soup.get_text(separator="\n")
-    return text
 
+    return text
 
 
 def extract_text_from_rtf(file_path: str) -> str:
-    with open(file_path, encoding="utf-8", errors="ignore") as f:
+    with Path.open(file_path, encoding="utf-8", errors="ignore") as f:
         rtf_content = f.read()
-    text = striprtf.rtf_to_text(rtf_content)
 
-    return text
+    return striprtf.rtf_to_text(rtf_content)
+
 
 def extract_text_from_odt(file_path: str) -> str:
-    with zipfile.ZipFile(file_path) as z:
-        with z.open("content.xml") as content_file:
-            tree = ET.parse(content_file)
-            root = tree.getroot()
-            namespaces = {
-                "text": "urn:oasis:names:tc:opendocument:xmlns:text:1.0",
-            }
-            texts = root.findall(".//text:p", namespaces)
-            text = "\n".join([t.text for t in texts if t.text])
+    with zipfile.ZipFile(file_path) as z, z.open("content.xml") as content_file:
+        tree = ET.parse(content_file)
+        root = tree.getroot()
+        namespaces = {
+            "text": "urn:oasis:names:tc:opendocument:xmlns:text:1.0",
+        }
+        texts = root.findall(".//text:p", namespaces)
 
-    return text
+    return "\n".join([t.text for t in texts if t.text])
+
 
 def extract_text_from_markdown(file_path: str) -> str:
-    with open(file_path, encoding="utf-8", errors="ignore") as f:
+    with Path.open(file_path, encoding="utf-8", errors="ignore") as f:
         md_content = f.read()
+
     html = markdown2.markdown(md_content)
     soup = BeautifulSoup(html, "html.parser")
-    text = soup.get_text(separator="\n")
 
-    return text
+    return soup.get_text(separator="\n")
 
 
 def extract_text_from_json(file_path: str) -> str:
-    with open(file_path, encoding="utf-8", errors="ignore") as f:
+    with Path.open(file_path, encoding="utf-8", errors="ignore") as f:
         data = json.load(f)
-    text = json.dumps(data, indent=2)
 
-    return text
+    return json.dumps(data, indent=2)
 
 
 def extract_text_from_yaml(file_path: str) -> str:
-    with open(file_path, encoding="utf-8", errors="ignore") as f:
+    with Path.open(file_path, encoding="utf-8", errors="ignore") as f:
         data = yaml.safe_load(f)
-    text = yaml.dump(data)
 
-    return text
+    return yaml.dump(data)
+
 
 def extract_text_from_xml(file_path: str) -> str:
     tree = ET.parse(file_path)
     root = tree.getroot()
     text_elements = []
 
-    def recursive_text_extract(element):
+    def recursive_text_extract(element: ET.Element) -> None:
         if element.text and element.text.strip():
             text_elements.append(element.text.strip())
         for child in element:
@@ -234,6 +212,7 @@ def extract_text_from_xml(file_path: str) -> str:
     recursive_text_extract(root)
 
     return "\n".join(text_elements)
+
 
 def extract_text_from_ini(file_path: str) -> str:
     parser = ConfigParser()
@@ -250,16 +229,28 @@ def extract_text_from_ini(file_path: str) -> str:
 
 
 def extract_text_from_binary(file_path: str) -> str:
-    with open(file_path, "rb") as f:
+    encodings = ["utf-8", "latin-1", "ascii"]
+    min_length = 4
+
+    with Path.open(file_path, "rb") as f:
         content = f.read()
 
-    printable_text = re.findall(b"[\x20-\x7E]+", content)
+    text_pattern = re.compile(b"[\x20-\x7e]{%d,}" % min_length)
+    printable_text = text_pattern.findall(content)
 
-    decoded_text = "\n".join(
-        [txt.decode("utf-8", errors="replace") for txt in printable_text]
-    )
+    results = []
+    for text in printable_text:
+        for encoding in encodings:
+            try:
+                decoded = text.decode(encoding)
+                if not decoded.isspace():
+                    results.append(decoded)
+                break
+            except UnicodeError:
+                continue
 
-    return decoded_text
+    return "\n".join(results)
+
 
 if __name__ == "__main__":
     print(extract_text_from_file("../taskor.py"))

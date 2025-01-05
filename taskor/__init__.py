@@ -1,1 +1,3 @@
-from .taskor import main as main
+from .taskor import main
+
+__all__ = ["main"]
