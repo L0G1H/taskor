@@ -290,5 +290,4 @@ pyrightconfig.json
 /dist/
 
 .python-version
-uv.lock
 
