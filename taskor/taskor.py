@@ -1,6 +1,6 @@
-from utils.text_extractor import extract_text_from_file
-from utils import get_file_paths
-from utils.assistant_api import get_completion
+from .utils.text_extractor import extract_text_from_file
+from .utils import get_file_paths
+from .utils.assistant_api import get_completion
 import argparse
 import json
 import pyperclip
