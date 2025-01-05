@@ -1,6 +1,12 @@
-from .utils.text_extractor import extract_text_from_file
-from .utils import get_file_paths
-from .utils.assistant_api import get_completion
+try:
+    from taskor.utils.text_extractor import extract_text_from_file
+    from taskor.utils import get_file_paths
+    from taskor.utils.assistant_api import get_completion
+except ImportError:
+    from utils.text_extractor import extract_text_from_file
+    from utils import get_file_paths
+    from utils.assistant_api import get_completion
+
 import argparse
 import json
 import pyperclip
