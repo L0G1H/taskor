@@ -277,7 +277,7 @@ def main() -> None:
             prompt=prompt,
             resources=resources,
             is_system_prompt=is_system_prompt,
-            SYSTEM_PROMPT_PATH=SYSTEM_PROMPT_PATH,
+            system_prompt_path=SYSTEM_PROMPT_PATH,
         )
 
         if isinstance(response, tuple):
